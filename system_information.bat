@@ -422,7 +422,15 @@ echo ^<pre^>  >> %REPORT_FILE%
 echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
-	
+		
+	call:htmlSectionHeader nonex "FME Server Services"
+:: Check for FME Services and report information
+echo Here is a list of the FME Server Services  >> %REPORT_FILE%
+echo ^<pre^>  >> %REPORT_FILE%
+wmic service where "name like 'FME%%'" get caption,startname,state >> %REPORT_FILE%
+echo ^</pre^> >> %REPORT_FILE%
+
+	call:htmlSectionFooter
 	
 :: Output the HTML footer section
 	call:htmlFooter
