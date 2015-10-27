@@ -299,6 +299,12 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 	reg query "HKLM\SOFTWARE\wow6432node\Autodesk" /s >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
 	
+        echo ^<h3^>MapInfo^</h3^> >> %REPORT_FILE%
+	echo ^<pre^> >> %REPORT_FILE%
+	reg query "HKLM\SOFTWARE\MapInfo" /s >> %REPORT_FILE%
+	reg query "HKLM\SOFTWARE\wow6432node\MapInfo" /s >> %REPORT_FILE%
+	echo ^</pre^> >> %REPORT_FILE%
+	
 	echo ^<h3^>Oracle^</h3^> >> %REPORT_FILE%
 	echo ^<pre^> >> %REPORT_FILE%
 	reg query hklm\software\oracle /s >> %REPORT_FILE%
