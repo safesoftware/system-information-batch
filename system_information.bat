@@ -551,6 +551,10 @@ echo ^<li^> ^<a href="#registry"^>Registry^</a^>^</li^> >> %REPORT_FILE%
 echo ^<li^> ^<a href="#machinekey"^>Machine Key (Registration Code)^</a^>^</li^> >> %REPORT_FILE%
 echo ^<li^> ^<a href="#FMEInstalls"^>FME Installations^</a^>^</li^> >> %REPORT_FILE%
 echo ^<li^> ^<a href="#nonex"^>Non-existent Path Entries^</a^>^</li^> >> %REPORT_FILE%
+echo ^<li^> ^<a href="#serverserv"^>FME Server Services^</a^>^</li^> >> %REPORT_FILE%
+echo ^<li^> ^<a href="#firewallst"^>Firewall Status^</a^>^</li^> >> %REPORT_FILE%
+echo ^<li^> ^<a href="#portst"^>Port Status^</a^>^</li^> >> %REPORT_FILE%
+echo ^<li^> ^<a href="#hostsfile"^>Hosts File^</a^>^</li^> >> %REPORT_FILE%
 echo ^</ul^> >> %REPORT_FILE%
 echo ^<hr /^> >> %REPORT_FILE%
 
