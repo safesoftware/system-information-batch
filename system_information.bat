@@ -429,11 +429,56 @@ echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
 		
-	call:htmlSectionHeader nonex "FME Server Services"
+	call:htmlSectionHeader serverserv "FME Server Services"
 :: Check for FME Services and report information
 echo Here is a list of the FME Server Services  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
 wmic service where "name like 'FME%%'" get caption,startname,state >> %REPORT_FILE%
+echo ^</pre^> >> %REPORT_FILE%
+
+	call:htmlSectionFooter
+
+	call:htmlSectionHeader firewallst "Firewall Status"
+:: Check if firewall on/off
+echo Here is the Firewall status for Domain Private Public  >> %REPORT_FILE%
+echo ^<pre^>  >> %REPORT_FILE%
+netsh advfirewall show all state >> %REPORT_FILE%
+echo ^</pre^> >> %REPORT_FILE%
+
+	call:htmlSectionFooter
+
+	call:htmlSectionHeader portst "Port Status"
+:: Check for Port state and PID 
+echo Here is the Port status for common FME processes.  >> %REPORT_FILE%
+echo check running processes above using PID to see what is using the Port  >> %REPORT_FILE%
+echo ^<pre^>  >> %REPORT_FILE%
+netstat -noa |find "Proto" >> %REPORT_FILE%
+netstat -noa |find /I "0.0.0.0:25" >> %REPORT_FILE% 
+netstat -noa |find /I "0.0.0.0:80" >> %REPORT_FILE%
+netstat -noa |find /I "0.0.0.0:110" >> %REPORT_FILE%
+netstat -noa |find /I ":7070" >> %REPORT_FILE%
+netstat -noa |find /I ":7071" >> %REPORT_FILE%
+netstat -noa |find /I ":7072" >> %REPORT_FILE%
+netstat -noa |find /I ":7073" >> %REPORT_FILE%
+netstat -noa |find /I ":7074" >> %REPORT_FILE%
+netstat -noa |find /I ":7075" >> %REPORT_FILE%
+netstat -noa |find /I ":7076" >> %REPORT_FILE%
+netstat -noa |find /I ":7077" >> %REPORT_FILE%
+netstat -noa |find /I ":7078" >> %REPORT_FILE%
+netstat -noa |find /I ":7079" >> %REPORT_FILE%
+netstat -noa |find /I ":7082" >> %REPORT_FILE%
+netstat -noa |find /I ":7500" >> %REPORT_FILE%
+netstat -noa |find /I ":465" >> %REPORT_FILE%
+netstat -noa |find /I ":995" >> %REPORT_FILE%
+echo ^</pre^> >> %REPORT_FILE%
+
+	call:htmlSectionFooter
+	
+	call:htmlSectionHeader hostsfile "Host File"
+:: Dump Contents of host file to report 
+echo Here is complete contents of the hosts file  >> %REPORT_FILE%
+echo ^<pre^>  >> %REPORT_FILE%
+more %SystemRoot%\System32\drivers\etc\hosts >> %REPORT_FILE%
 echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
