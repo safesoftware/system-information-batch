@@ -77,6 +77,7 @@ echo ^<li^>OS Version  ^</li^> >> %REPORT_FILE%
 echo ^<li^>System Model  ^</li^> >> %REPORT_FILE%
 echo ^<li^>System Type  ^</li^> >> %REPORT_FILE%
 echo ^<li^>Available Physical Memory^</li^>  >> %REPORT_FILE%
+echo ^<li^>Graphics Card^</li^>  >> %REPORT_FILE%
 echo ^</ul^> >> %REPORT_FILE%
 echo.  >> %REPORT_FILE%
 	
@@ -88,6 +89,8 @@ echo.  >> %REPORT_FILE%
 	systeminfo  >> %REPORT_FILE%
 	echo.  >> %REPORT_FILE%
     wmic os get OSArchiteccture >> %REPORT_FILE%
+	echo. >> %REPORT_FILE%
+	wmic path win32_VideoController get name >> %REPORT_FILE%
 	echo. >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
 
