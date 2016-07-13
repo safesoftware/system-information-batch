@@ -412,6 +412,19 @@ echo ^<pre^>  >> %REPORT_FILE%
 					type "%%I" >> %REPORT_FILE% 
 					echo.  >> %REPORT_FILE%
 				)
+
+	echo The contents of: >> %REPORT_FILE%
+	echo %ProgramData%\Safe Software\FME\Licenses are: >> %REPORT_FILE%
+			dir "%ProgramData%\Safe Software\FME\Licenses\*.*" /b  >> %REPORT_FILE%
+
+				FOR %%I in ("%ProgramData%\Safe Software\FME\Licenses\*.*") DO (
+					echo.  >> %REPORT_FILE%
+					echo The contents of >> %REPORT_FILE%
+					echo %%I >> %REPORT_FILE%
+					echo.  >> %REPORT_FILE%
+					type "%%I" >> %REPORT_FILE% 
+					echo.  >> %REPORT_FILE%
+				)
 	echo ^</pre^> >> %REPORT_FILE%
 	
 	call:htmlSectionFooter
