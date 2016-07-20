@@ -278,6 +278,7 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 :: The wow6432node entries are for 32-bit programs installed on a 64-bit OS.
 	echo ^<h3^>FME^</h3^> >> %REPORT_FILE%
 	echo ^<pre^> >> %REPORT_FILE%
+	echo ^<b^>On a 64-bit OS, any wow6432node entries indicate a 32-bit FME installation.^</b^> ^<br^> >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Safe Software Inc." >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine" >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine\BUILD" >> %REPORT_FILE%
