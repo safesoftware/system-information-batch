@@ -291,6 +291,8 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\wow6432node\Safe Software Inc.\FME Objects\OEM" /s >> %REPORT_FILE%
 	echo  ^<b^>If a non-default Python interpreter is being used, it will be listed below  ^</b^> ^<br^> >> %REPORT_FILE
 	reg query "HKEY_CURRENT_USER\Software\Safe Software Inc.\Feature Manipulation Engine\Python" >> %REPORT_FILE%
+	echo  ^<b^>If Proxy settings are used, it will be listed below  ^</b^> ^<br^> >> %REPORT_FILE
+	reg query "HKEY_CURRENT_USER\Software\Safe Software Inc.\FME Workbench\Settings" >> %REPORT_FILE%	
 	echo ^</pre^> >> %REPORT_FILE%
 	
 	echo ^<h3^>ESRI^</h3^> >> %REPORT_FILE%
