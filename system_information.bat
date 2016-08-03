@@ -383,7 +383,9 @@ echo ^<pre^>  >> %REPORT_FILE%
 					type "%%I" >> %REPORT_FILE% 
 					echo.  >> %REPORT_FILE%
 				)
-				
+			echo The folders in %%~dpF\help\fme_desktop\ are: >> %REPORT_FILE%
+			dir "%%~dpF\help\fme_desktop" /B  >> %REPORT_FILE%
+			echo.  >> %REPORT_FILE%	
 			echo Looking for more FME installations...
 			echo.  >> %REPORT_FILE%
 		)
