@@ -6,20 +6,22 @@
 :: Last edited on 2014-09-24
 :: Contents Edited by Brian Pont
 :: Last edited on 2015-10-27
+:: Contents Edited by Ryan Cragg
+:: Last edited on 2019-10-07
 
 :: We turn echo off so that the screen doesn't show each command as it is run
 	@ECHO OFF
 
 :: The following line is necessary for ERRORLEVEL capture.
 	SetLocal EnableDelayedExpansion
-	
+
 :: This batch file must be run from the directory it is placed in
 :: but if it is run in Admin mode, it will sometimes run from \windows\system32
 :: We can set it to run from the current folder using pushd %~dp0
 
 	pushd %~dp0
 
-	
+
 
 
 ::We use REPORT_FILE to make it easier to rename the output at a later date.
@@ -40,9 +42,9 @@
 	ECHO and selecting "Run as Administrator"
 	echo.
 	ECHO Press CTRL-C to Quit, or
-	pause	
+	pause
 
-:: Now for a nicer colour	
+:: Now for a nicer colour
 	color 0f
 	cls
 
@@ -63,7 +65,7 @@ call:htmlHeader
   time /T >> %REPORT_FILE%
 	echo.  >> %REPORT_FILE%
 
-	
+
 :: Now, let's get the system information
 echo.  >> %REPORT_FILE%
 
@@ -80,7 +82,7 @@ echo ^<li^>Available Physical Memory^</li^>  >> %REPORT_FILE%
 echo ^<li^>Graphics Card^</li^>  >> %REPORT_FILE%
 echo ^</ul^> >> %REPORT_FILE%
 echo.  >> %REPORT_FILE%
-	
+
 	echo ^<pre^> >> %REPORT_FILE%
 
 :: This command grabs the system information
@@ -92,6 +94,8 @@ echo.  >> %REPORT_FILE%
 	echo. >> %REPORT_FILE%
 	wmic path win32_VideoController get name >> %REPORT_FILE%
 	echo. >> %REPORT_FILE%
+	qtdiag.exe >> %REPORT_FILE%
+	echo.  >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
 
 call:htmlSectionFooter
@@ -147,18 +151,18 @@ echo 		PATH ^</blockquote^> >> %REPORT_FILE%
 echo ***************************************************************************  >> %REPORT_FILE%
 echo.  >> %REPORT_FILE%
 
-:: Better remove LM_CHECK, so it doesn't get reported.	
+:: Better remove LM_CHECK, so it doesn't get reported.
 	SET LM_CHECK=
-	
+
 :: This command grabs all of the environment variables
 	set >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	call:htmlSectionFooter
-	
+
 	call:htmlSectionHeader sdelib "SDE Libraries"
-echo Check to see if SDE libaries exist.>> %REPORT_FILE%	
-echo 	If they exist, sde.dll, sg.dll, and pe.dll will be listed below. >> %REPORT_FILE%	
+echo Check to see if SDE libaries exist.>> %REPORT_FILE%
+echo 	If they exist, sde.dll, sg.dll, and pe.dll will be listed below. >> %REPORT_FILE%
 echo.  >> %REPORT_FILE%
 
 :: Check to see if sde.dll, sg.dll, and pe.dll are in the ArcGIS\bin\ folder
@@ -185,16 +189,16 @@ echo.  >> %REPORT_FILE%
 		)
 	)
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	call:htmlSectionFooter
 	call:htmlSectionHeader oractns "Oracle"
-	
+
 echo Check to see if Oracle's ORACLE_HOME OR TNS_ADMIN is set,				>> %REPORT_FILE%
 echo and if tnsnames.ora and oci.dll files exist.					>> %REPORT_FILE%
 echo It is permissible to install both 32 and 64 bit clients together; >> %REPORT_FILE%
 echo for FME purposes you just have to make sure that ORACLE_HOME is *not* defined, >> %REPORT_FILE%
-echo and that the PATH includes both instant clients' installation directories (in either order). ^<br /^> >> %REPORT_FILE%	
-echo If ORACLE_HOME OR TNS_ADMIN exist, they will be listed below >> %REPORT_FILE%	
+echo and that the PATH includes both instant clients' installation directories (in either order). ^<br /^> >> %REPORT_FILE%
+echo If ORACLE_HOME OR TNS_ADMIN exist, they will be listed below >> %REPORT_FILE%
 echo.  >> %REPORT_FILE%
 
 :: Check to see if Check to see if Oracle's ORACLE_HOME;TNS_ADMIN, and then find if tnsnames.ora and oci.dll files exist.
@@ -213,7 +217,7 @@ echo.  >> %REPORT_FILE%
 		) ElSE echo %%c is not defined as an environment variable. >> %REPORT_FILE%
 	)
 
-	
+
 :: These first two lines parse the PATH variable.  We then search each folder in the path for oci.dll.
 	SET TempPath="%Path:;=";"%"
 	FOR %%a IN (%TempPath%) DO (
@@ -225,12 +229,12 @@ echo.  >> %REPORT_FILE%
 		)
 	)
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 echo Here are the contents of ORACLE_HOME as defined in the registry, and  >> %REPORT_FILE%
 echo listings of tnsnames.ora files as found.  Unfortunately, there is no >> %REPORT_FILE%
 echo built-in way to check whether dll's are 32-bit or 64-bit. There are >> %REPORT_FILE%
 echo tools that do it, but they must be installed. >> %REPORT_FILE%
-	
+
 	echo ^<pre^> >> %REPORT_FILE%
 
 
@@ -246,24 +250,24 @@ echo tools that do it, but they must be installed. >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
-  
+
 	call:htmlSectionHeader autodesk "Autodesk"
 
 echo Contents of the Autodesk plugin directories: >> %REPORT_FILE%
 
   echo ^<pre^> >> %REPORT_FILE%
-    
+
     call:dirContents %APPDATA%\Autodesk\Revit\Addins
     call:dirContents %APPDATA%\Autodesk\ApplicationPlugins
-  
+
   echo ^</pre^> >> %REPORT_FILE%
 
-  
-  
+
+
   call:htmlSectionFooter
-    
+
 	call:htmlSectionHeader registry Registry
-	
+
 echo 	Take Note of:  ^<br /^> >> %REPORT_FILE%
 echo		^<ul^>^<li^>Anything with License in the name if you have an old FME.^</li^>  >> %REPORT_FILE%
 echo		^<li^>"BUILD" will list what FME builds have been installed.^</li^>  >> %REPORT_FILE%
@@ -296,49 +300,49 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 	echo  ^<b^>Some hardware information that might be useful  ^</b^> ^<br^> >> %REPORT_FILE
 	reg query "HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\MultifunctionAdapter" /s >>%REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	echo ^<h3^>ESRI^</h3^> >> %REPORT_FILE%
 	echo ^<pre^> >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\ESRI" /s >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\wow6432node\ESRI" /s >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	echo ^<h3^>Autodesk^</h3^> >> %REPORT_FILE%
 	echo ^<pre^> >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Autodesk" /s >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\wow6432node\Autodesk" /s >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
         echo ^<h3^>MapInfo^</h3^> >> %REPORT_FILE%
 	echo ^<pre^> >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\MapInfo" /s >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\wow6432node\MapInfo" /s >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	echo ^<h3^>Oracle^</h3^> >> %REPORT_FILE%
 	echo ^<pre^> >> %REPORT_FILE%
 	reg query hklm\software\oracle /s >> %REPORT_FILE%
 	reg query hklm\software\wow6432node\oracle /s >> %REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	call:htmlSectionFooter
 	call:htmlSectionHeader machinekey "Machine Key (Registration Code)"
 
-	
+
 echo Here is the Machine Key or Registration Code ^<br /^>  >> %REPORT_FILE%
 echo 	Ensure that is is the same as what is  >> %REPORT_FILE%
 echo 	listed in the license files below.  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
 
 :: Find the expected Machine Key AKA Registration Code
-:: This will use the first FME installation in the PATH. 
+:: This will use the first FME installation in the PATH.
 :: If we break this again, like we did in 2003, we may have to update this command.
 	fmelicensingassistant_cmd --key >>%REPORT_FILE%
 	echo ^</pre^>  >> %REPORT_FILE%
-	
+
 	call:htmlSectionFooter
 	call:htmlSectionHeader FMEInstalls "FME Installations"
-	
+
 echo Here are all of the FME.EXE installed and in the path  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
 
@@ -357,7 +361,7 @@ echo ^<pre^>  >> %REPORT_FILE%
 			echo ***************************************************************************  >> %REPORT_FILE%
 			echo.  >> %REPORT_FILE%
 
-			echo Finding installer information...	
+			echo Finding installer information...
 			echo Installed using:  >> %REPORT_FILE%
 			type "%%~dpF\eval_info.txt" >> %REPORT_FILE%
 			echo.  >> %REPORT_FILE%
@@ -370,10 +374,10 @@ echo ^<pre^>  >> %REPORT_FILE%
 					echo The contents of >> %REPORT_FILE%
 					echo %%I >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
-					type "%%I" >> %REPORT_FILE% 
+					type "%%I" >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
 				)
-				
+
 			echo The contents of the parlic folder are:  >> %REPORT_FILE%
 			dir "%%~dpF\parlic\*.*" /b  >> %REPORT_FILE%
 
@@ -382,17 +386,17 @@ echo ^<pre^>  >> %REPORT_FILE%
 					echo The contents of >> %REPORT_FILE%
 					echo %%I >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
-					type "%%I" >> %REPORT_FILE% 
+					type "%%I" >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
 				)
 			echo The folders in %%~dpF\help\fme_desktop\ are: >> %REPORT_FILE%
 			dir "%%~dpF\help\fme_desktop" /B  >> %REPORT_FILE%
-			echo.  >> %REPORT_FILE%	
+			echo.  >> %REPORT_FILE%
 			echo Looking for more FME installations...
 			echo.  >> %REPORT_FILE%
 		)
 	)
-	
+
 :: There is also a chance that the user has a license file in their
 :: My Documents OR Documents \FME\licenses folder, so we should grab that info too
 
@@ -405,7 +409,7 @@ echo ^<pre^>  >> %REPORT_FILE%
 					echo The contents of >> %REPORT_FILE%
 					echo %%I >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
-					type "%%I" >> %REPORT_FILE% 
+					type "%%I" >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
 				)
 
@@ -418,7 +422,7 @@ echo ^<pre^>  >> %REPORT_FILE%
 					echo The contents of >> %REPORT_FILE%
 					echo %%I >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
-					type "%%I" >> %REPORT_FILE% 
+					type "%%I" >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
 				)
 
@@ -431,29 +435,29 @@ echo ^<pre^>  >> %REPORT_FILE%
 					echo The contents of >> %REPORT_FILE%
 					echo %%I >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
-					type "%%I" >> %REPORT_FILE% 
+					type "%%I" >> %REPORT_FILE%
 					echo.  >> %REPORT_FILE%
 				)
 	echo ^</pre^> >> %REPORT_FILE%
-	
+
 	call:htmlSectionFooter
-	
+
 	call:htmlSectionHeader nonex "Non-existent path entries"
 :: Check for non-existent entries on the path. Report if missing.
 echo Here are any PATH directories that do not actually exist (should be blank.)  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
-	
+
 	SET TempPath="%Path:;=";"%"
 	FOR %%a IN (%TempPath%) DO (
 		if not %%a == "" (
 			IF NOT EXIST %%a call:pathNE %%a
 		)
 	)
-	
+
 echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
-		
+
 	call:htmlSectionHeader serverserv "FME Server Services"
 :: Check for FME Services and report information
 echo Here is a list of the FME Server Services  >> %REPORT_FILE%
@@ -473,12 +477,12 @@ echo ^</pre^> >> %REPORT_FILE%
 	call:htmlSectionFooter
 
 	call:htmlSectionHeader portst "Port Status"
-:: Check for Port state and PID 
+:: Check for Port state and PID
 echo Here is the Port status for common FME processes.  >> %REPORT_FILE%
 echo check running processes above using PID to see what is using the Port  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
 netstat -noa |find "Proto" >> %REPORT_FILE%
-netstat -noa |find /I "0.0.0.0:25" >> %REPORT_FILE% 
+netstat -noa |find /I "0.0.0.0:25" >> %REPORT_FILE%
 netstat -noa |find /I "0.0.0.0:80" >> %REPORT_FILE%
 netstat -noa |find /I "0.0.0.0:110" >> %REPORT_FILE%
 netstat -noa |find /I ":7070" >> %REPORT_FILE%
@@ -498,16 +502,16 @@ netstat -noa |find /I ":995" >> %REPORT_FILE%
 echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
-	
+
 	call:htmlSectionHeader hostsfile "Host File"
-:: Dump Contents of host file to report 
+:: Dump Contents of host file to report
 echo Here is complete contents of the hosts file  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
 more %SystemRoot%\System32\drivers\etc\hosts >> %REPORT_FILE%
 echo ^</pre^> >> %REPORT_FILE%
 
 	call:htmlSectionFooter
-	
+
 :: Output the HTML footer section
 	call:htmlFooter
 
@@ -527,9 +531,9 @@ echo ^</pre^> >> %REPORT_FILE%
 	echo Thank You!
 	echo.
 	pause
-	
+
 	color 0F
-	
+
 goto:eof
 
 :: Functions here
