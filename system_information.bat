@@ -8,6 +8,8 @@
 :: Last edited on 2015-10-27
 :: Contents Edited by Ryan Cragg
 :: Last edited on 2019-10-07
+:: Contents Edited by Andrea Eisma
+:: Last edited on 2020-07-24
 
 :: We turn echo off so that the screen doesn't show each command as it is run
 	@ECHO OFF
@@ -285,7 +287,7 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 	echo ^<b^>On a 64-bit OS, any wow6432node entries indicate a 32-bit FME installation.^</b^> ^<br^> >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Safe Software Inc." >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine" >> %REPORT_FILE%
-	reg query "HKLM\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine\BUILD" >> %REPORT_FILE%
+	reg query "HKLM\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine\BUILD" /s >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine\Extensions" /s >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\wow6432node\Safe Software Inc." >> %REPORT_FILE%
 	reg query "HKLM\SOFTWARE\wow6432node\Safe Software Inc.\Feature Manipulation Engine" >> %REPORT_FILE%
@@ -293,12 +295,14 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 	reg query "HKLM\SOFTWARE\wow6432node\Safe Software Inc.\Feature Manipulation Engine\Extensions" /s >> %REPORT_FILE%
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Safe Software Inc.\FME Objects\OEM" /s >> %REPORT_FILE%
 	reg query "HKEY_LOCAL_MACHINE\SOFTWARE\wow6432node\Safe Software Inc.\FME Objects\OEM" /s >> %REPORT_FILE%
-	echo  ^<b^>If a non-default Python interpreter is being used, it will be listed below  ^</b^> ^<br^> >> %REPORT_FILE
+	echo  ^<b^>If a non-default Python interpreter is being used, it will be listed below  ^</b^> ^<br^> >> %REPORT_FILE%
 	reg query "HKEY_CURRENT_USER\Software\Safe Software Inc.\Feature Manipulation Engine\Python" >> %REPORT_FILE%
-	echo  ^<b^>If Proxy settings are used, it will be listed below  ^</b^> ^<br^> >> %REPORT_FILE
+	echo  ^<b^>If Proxy settings are used, it will be listed below  ^</b^> ^<br^> >> %REPORT_FILE%
 	reg query "HKEY_CURRENT_USER\Software\Safe Software Inc.\FME Workbench\Settings" >> %REPORT_FILE%
-	echo  ^<b^>Some hardware information that might be useful  ^</b^> ^<br^> >> %REPORT_FILE
+	echo  ^<b^>Some hardware information that might be useful  ^</b^> ^<br^> >> %REPORT_FILE%
 	reg query "HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\MultifunctionAdapter" /s >>%REPORT_FILE%
+	echo  ^<b^>Some product information that might be useful  ^</b^> ^<br^> >> %REPORT_FILE%
+	reg query "HKLM\SOFTWARE\Microsoft\Cryptography" /v MachineGuid >>%REPORT_FILE%
 	echo ^</pre^> >> %REPORT_FILE%
 
 	echo ^<h3^>ESRI^</h3^> >> %REPORT_FILE%
@@ -328,17 +332,60 @@ echo		^<li^>If "Borrow" has entries after it, a license has been borrowed.^</li^
 	call:htmlSectionFooter
 	call:htmlSectionHeader machinekey "Machine Key (Registration Code)"
 
+:: Tell the customer what we are doing
+	echo Searching for FME Registration Code...
 
 echo Here is the Machine Key or Registration Code ^<br /^>  >> %REPORT_FILE%
 echo 	Ensure that is is the same as what is  >> %REPORT_FILE%
 echo 	listed in the license files below.  >> %REPORT_FILE%
 echo ^<pre^>  >> %REPORT_FILE%
 
+:: Update registration key reporting to show the registration key for the newest FME install
+:: FME Registration Keys were updated in 2019, the newest FME should be used to license a machine
+:: Note: that the below codes will only be valid for FME 2019 and newer versions.
+:: We will need to update this if we change how the code is generated again
+	set x64_KEY_NAME=HKEY_LOCAL_MACHINE\SOFTWARE\Safe Software Inc.\Feature Manipulation Engine\BUILD
+	set VALUE_NAME64=FME_HOME
+
+	for /f "tokens=*" %%I IN ('REG QUERY "%x64_KEY_NAME%" 2^>nul') DO (
+		set LastFMEInstall64=%%I)
+
+	for /f "tokens=1-2*" %%A IN ('REG QUERY "%LastFMEInstall64%" /v "%VALUE_NAME64%" 2^>nul') DO (
+		set "ValueName=%%A"
+		set "ValueType=%%B"
+		set FMEInstallDir64=%%C)
+
+	set x86_KEY_NAME=HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Safe Software Inc.\Feature Manipulation Engine\BUILD
+	set VALUE_NAME32=FME_HOME
+
+	for /f "tokens=*" %%I IN ('REG QUERY "%x86_KEY_NAME%" 2^>nul') DO (
+		set LastFMEInstall32=%%I)
+
+	for /f "tokens=1-2*" %%A IN ('REG QUERY "%LastFMEInstall32%" /v "%VALUE_NAME32%" 2^>nul') DO (
+		set "ValueName=%%A"
+		set "ValueType=%%B"
+		set FMEInstallDir32=%%C)
+
+	IF EXIST "%FMEInstallDir64%fme.exe" (
+		echo Here is the registration key for the most recent FME 64-bit installation: %FMEInstallDir64% ^<br /^>  >> %REPORT_FILE%
+		"%FMEInstallDir64%fmelicensingassistant_cmd" --key >> %REPORT_FILE%
+	) ElSE (
+		echo There is no 64-bit installed >> %REPORT_FILE%
+	)
+	echo. >> %REPORT_FILE%
+	IF EXIST "%FMEInstallDir32%fme.exe" (
+		echo Here is the registration key for the most recent FME 32-bit installation: %FMEInstallDir32% ^<br /^>  >> %REPORT_FILE%
+		"%FMEInstallDir32%fmelicensingassistant_cmd" --key >> %REPORT_FILE%
+	) ElSE (
+		echo There is no 32-bit installed >> %REPORT_FILE%
+	)
+	echo. >> %REPORT_FILE%
+
 :: Find the expected Machine Key AKA Registration Code
 :: This will use the first FME installation in the PATH.
-:: If we break this again, like we did in 2003, we may have to update this command.
+	echo ^<i^>For Safe Software debugging purposes only: This is the registration key from the first FME install in the PATH environment variable: >> %REPORT_FILE%
 	fmelicensingassistant_cmd --key >>%REPORT_FILE%
-	echo ^</pre^>  >> %REPORT_FILE%
+	echo ^</i^> ^</pre^>  >> %REPORT_FILE%
 
 	call:htmlSectionFooter
 	call:htmlSectionHeader FMEInstalls "FME Installations"
@@ -364,6 +411,9 @@ echo ^<pre^>  >> %REPORT_FILE%
 			echo Finding installer information...
 			echo Installed using:  >> %REPORT_FILE%
 			type "%%~dpF\eval_info.txt" >> %REPORT_FILE%
+			echo.  >> %REPORT_FILE%
+			echo FME Version: >> %REPORT_FILE%
+			"""%%~dpFfme.exe" info"" >> %REPORT_FILE%
 			echo.  >> %REPORT_FILE%
 
 			echo The contents of the Licenses folder are:  >> %REPORT_FILE%
